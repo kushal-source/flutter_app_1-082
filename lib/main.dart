@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Vesuvio',
       theme: ThemeData(
         primaryColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: const SplashScreen(),
     );
@@ -114,7 +114,7 @@ class HomeScreen extends StatelessWidget{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const AllRecipeScreen(),
+                      builder: (context) =>  AllRecipeScreen(),
                     ),
                   );
                 },
@@ -335,7 +335,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
       ),
     );
   }
-
+//
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -457,18 +457,190 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
 }
 
 // --- PLACEHOLDER ---
+
+
 class AllRecipeScreen extends StatelessWidget {
-  const AllRecipeScreen({super.key});
+  AllRecipeScreen({super.key});
+
+  final List<Map<String, String>> recipes = [
+    {
+      "title": "Veg Biryani",
+      "category": "Indian",
+      "time": "45 mins"
+    },
+    {
+      "title": "Pasta Alfredo",
+      "category": "Italian",
+      "time": "30 mins"
+    },
+    {
+      "title": "Paneer Butter Masala",
+      "category": "Indian",
+      "time": "40 mins"
+    },
+    {
+      "title": "Veg Noodles",
+      "category": "Chinese",
+      "time": "25 mins"
+    },
+    {
+      "title": "Chocolate Cake",
+      "category": "Dessert",
+      "time": "60 mins"
+    },
+  ];
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('All Recipes'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.blue,
+        title: Text("Recipe List"),
+        backgroundColor: Colors.blue,
       ),
-      body: const Center(child: Text('All Recipes Screen (Pending)', style: TextStyle(color: Colors.blue))),
+      body: ListView.builder(
+        itemCount: recipes.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              leading: Icon(Icons.restaurant_menu, color: Colors.blue),
+              title: Text(recipes[index]["title"]!),
+              subtitle: Text(
+                  "Category: ${recipes[index]["category"]}\nCooking Time: ${recipes[index]["time"]}"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecipeDetailPage(),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }
+
+
+
+class RecipeDetailPage extends StatelessWidget {
+
+  final String title = "Veg Biryani";
+
+  final List<String> ingredients = [
+    "2 cups Basmati Rice",
+    "1 cup Mixed Vegetables",
+    "2 Onions",
+    "2 Tomatoes",
+    "Biryani Masala",
+    "Salt",
+    "Oil"
+  ];
+
+  final List<String> steps = [
+    "Wash and soak the rice for 20 minutes.",
+    "Heat oil in a pan and fry sliced onions.",
+    "Add tomatoes and cook until soft.",
+    "Add vegetables and spices.",
+    "Add soaked rice and water.",
+    "Cook for 20 minutes until rice is done."
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              Text(
+                "Ingredients",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+
+              SizedBox(height: 10),
+
+              ...ingredients.map((item) {
+                return ListTile(
+                  leading: Icon(Icons.check_circle, color: Colors.blue),
+                  title: Text(item),
+                );
+              }).toList(),
+
+              SizedBox(height: 20),
+
+              Text(
+                "Preparation Steps",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+
+              SizedBox(height: 10),
+
+              ...steps.asMap().entries.map((entry) {
+                int index = entry.key + 1;
+                String step = entry.value;
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Text("$index"),
+                  ),
+                  title: Text(step),
+                );
+              }).toList(),
+
+              SizedBox(height: 30),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Edit button clicked")),
+                      );
+                    },
+                    icon: Icon(Icons.edit),
+                    label: Text("Edit",
+                      style: TextStyle(color: Colors.white),    ),
+                  ),
+
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Recipe Deleted")),
+                      );
+                    },
+                    icon: Icon(Icons.delete),
+                    label: Text("Delete",
+                      style: TextStyle(color: Colors.white),
+                    ),
+
+                  ),
+
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }}
+
