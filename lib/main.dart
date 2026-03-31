@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Make sure this is in your pubspec.yaml
-
+import 'package:image_picker/image_picker.dart';
+// Make sure this is in your pubspec.yaml
+import 'models/recipe.dart';
+import 'database/db_helper.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -297,7 +299,8 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
       }
   }
 
-  void submitForm(){
+  // Inside AddRecipeScreenState
+  void submitForm() async {
     if (_formKey.currentState!.validate()) {
       if (selectedCategory == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -306,15 +309,29 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
         return;
       }
 
+      // Create the Recipe object
+      final recipe = Recipe(
+        name: nametxt.text,
+        ingredients: ingredents.text,
+        steps: steps.text,
+        category: selectedCategory!,
+        time: timecontroller.text,
+        image: _selectedImage?.path,
+      );
+
+      // Save to Database
+      await DBHelper.instance.insertRecipe(recipe);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Recipe Added Successfully!", style: TextStyle(color: Colors.white)),
+          content: Text("Recipe Saved to Database!", style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.blue,
         ),
       );
 
       Navigator.pop(context);
-  }}
+    }
+  }
 
   // Helper method for styling text fields
   InputDecoration _buildInputDecoration(String label) {
@@ -356,7 +373,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
              children: [
                TextFormField(
                  controller: nametxt,
-                 style: const TextStyle(color: Colors.white),
+                 style: const TextStyle(color: Colors.black),
                  decoration: _buildInputDecoration("Recipe Name"),
                  validator: (value) =>
                  value == null || value.isEmpty ? "Please enter recipe name" : null,
@@ -364,7 +381,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
                const SizedBox(height: 19),
                TextFormField(
                  controller: ingredents,
-                 style: const TextStyle(color: Colors.white),
+                 style: const TextStyle(color: Colors.black),
                  decoration: _buildInputDecoration("Recipe Ingredients"),
                  validator: (value) =>
                  value == null || value.isEmpty ? "Please enter ingredients" : null,
@@ -372,7 +389,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
                const SizedBox(height: 19),
                TextFormField(
                  controller: steps,
-                 style: const TextStyle(color: Colors.white),
+                 style: const TextStyle(color: Colors.black),
                  decoration: _buildInputDecoration("Steps"),
                  validator: (value) =>
                  value == null || value.isEmpty ? "Please enter steps" : null,
@@ -382,7 +399,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
                DropdownButtonFormField<String>(
                  value: selectedCategory,
                  dropdownColor: Colors.white, // Dark background for dropdown menu
-                 style: const TextStyle(color: Colors.white),
+                 style: const TextStyle(color: Colors.black),
                  decoration: _buildInputDecoration("Select Category"),
                  items: categories
                    .map(
@@ -402,7 +419,7 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
                const SizedBox(height: 19),
                TextFormField(
                  controller: timecontroller,
-                 style: const TextStyle(color: Colors.white),
+                 style: const TextStyle(color: Colors.black),
                  decoration: _buildInputDecoration("Required Time (e.g., 30 mins)"),
                  validator: (value) =>
                  value == null || value.isEmpty ? "Please enter required time" : null,
@@ -643,4 +660,71 @@ class RecipeDetailPage extends StatelessWidget {
       ),
     );
   }}
+
+//Practical-8 Create a recipe card widget displaying image, recipe title, and category, and reuse it
+// across the app.
+
+class RecipeCard extends StatelessWidget {
+  final String title;
+  final String category;
+  final String image;
+  final VoidCallback? onTap; // Optional: tap action
+  const RecipeCard({
+  required this.title,
+  required this.category,
+  required this.image,
+  this.onTap,
+    super.key,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+// IMAGE
+          ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      child: Image.asset(
+        image,
+        height: 140,
+        width: double.infinity,
+        fit: BoxFit.cover,
+      ),
+    ),
+    Padding(
+    padding: const EdgeInsets.all(10.0),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+// TITLE
+    Text(
+    title,
+    style: TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold
+    ),
+    ),
+      SizedBox(height: 5),
+// CATEGORY
+      Text(
+        category,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.grey[700],
+        ),
+      ),
+    ],
+    ),
+    ),
+              ],
+          ),
+      ),
+    );
+  }
+}
 
