@@ -55,7 +55,7 @@ class SplashScreenState extends State<SplashScreen> {
               fontWeight: FontWeight.bold,
               color: Colors.blue
             )),
-           const Text("Three generations of Buccos sweated over that stove",  style: TextStyle(
+           const Text("A true taste of Italy, right here at Vesuvio",  style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.blue
