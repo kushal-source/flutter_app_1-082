@@ -28,4 +28,17 @@ class Recipe {
       'image': image,
     };
   }
+
+  // ADD THIS SECTION: This converts a Map from the Database back into a Recipe object
+  factory Recipe.fromMap(Map<String, dynamic> map) {
+    return Recipe(
+      id: map['id'],
+      name: map['name'],
+      ingredients: map['ingredients'],
+      steps: map['steps'],
+      category: map['category'],
+      time: map['time'],
+      image: map['image'],
+    );
+  }
 }

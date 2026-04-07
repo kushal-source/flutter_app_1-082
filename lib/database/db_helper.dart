@@ -37,4 +37,30 @@ class DBHelper {
     final db = await instance.database;
     return await db.insert('recipes', recipe.toMap());
   }
+
+  // Add these methods inside your DBHelper class
+  Future<List<Recipe>> getAllRecipes() async {
+    final db = await instance.database;
+    final result = await db.query('recipes');
+    return result.map((json) => Recipe.fromMap(json)).toList();
+  }
+
+  Future<int> updateRecipe(Recipe recipe) async {
+    final db = await instance.database;
+    return await db.update(
+      'recipes',
+      recipe.toMap(),
+      where: 'id = ?',
+      whereArgs: [recipe.id],
+    );
+  }
+
+  Future<int> deleteRecipe(int id) async {
+    final db = await instance.database;
+    return await db.delete(
+      'recipes',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
