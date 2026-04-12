@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'recipe_list_screen.dart';
 import 'package:image_picker/image_picker.dart';
-// Make sure this is in your pubspec.yaml
 import 'models/recipe.dart';
 import 'database/db_helper.dart';
+import 'screens/pizza_recipes_screen.dart';
+import 'favorites_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -180,6 +181,63 @@ class HomeScreen extends StatelessWidget{
                     context,
                     MaterialPageRoute(
                       builder: (context) => const CategoriesScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20), // Adds space between the buttons
+
+              // --- NEW API BUTTON ---
+              ElevatedButton.icon(
+                icon: const Icon(
+                  Icons.wifi, // A wifi icon to represent the internet/API
+                  color: Colors.blue,
+                ),
+                label: const Text(
+                  "Trending API Recipes",
+                  style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: const TextStyle(fontSize: 20),
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  // This tells the app to go to your new API screen!
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChickenRecipesScreen(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // --- PRACTICAL 5: FAVORITES BUTTON ---
+              ElevatedButton.icon(
+                icon: const Icon(Icons.favorite, color: Colors.redAccent),
+                label: const Text(
+                  "Favorites Demo",
+                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: const TextStyle(fontSize: 20),
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Colors.redAccent, width: 2),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AllRecipeScreen(),
                     ),
                   );
                 },
@@ -504,120 +562,61 @@ class AddRecipeScreenState extends State<AddRecipeScreen>{
 }
 
 // --- UPDATED ALL RECIPES SCREEN ---
-class AllRecipeScreen extends StatelessWidget {
-  AllRecipeScreen({super.key});
+// --- UPDATED ALL RECIPES SCREEN ---
+// CHANGE 1: Changed from StatelessWidget to StatefulWidget
+// Make sure you have this import at the very top of your file!
+// import 'models/recipe.dart';
 
-  // Updated list with dynamic ingredients and steps for all recipes
-  final List<Map<String, dynamic>> recipes = [
-    {
-      "title": "Veg Biryani",
-      "category": "Indian",
-      "time": "45 mins",
-      "ingredients": [
-        "2 cups Basmati Rice",
-        "1 cup Mixed Vegetables",
-        "2 Onions",
-        "2 Tomatoes",
-        "Biryani Masala",
-        "Salt",
-        "Oil"
-      ],
-      "steps": [
-        "Wash and soak the rice for 20 minutes.",
-        "Heat oil in a pan and fry sliced onions.",
-        "Add tomatoes and cook until soft.",
-        "Add vegetables and spices.",
-        "Add soaked rice and water.",
-        "Cook for 20 minutes until rice is done."
-      ]
-    },
-    {
-      "title": "Pasta Alfredo",
-      "category": "Italian",
-      "time": "30 mins",
-      "ingredients": [
-        "250g Fettuccine Pasta",
-        "1/2 cup Heavy Cream",
-        "1/4 cup Parmesan Cheese",
-        "2 cloves Garlic, minced",
-        "2 tbsp Butter",
-        "Salt and Black Pepper"
-      ],
-      "steps": [
-        "Boil pasta according to package instructions.",
-        "Melt butter in a pan over medium heat.",
-        "Sauté garlic for 1 minute until fragrant.",
-        "Stir in heavy cream and simmer for 2 minutes.",
-        "Add parmesan cheese and whisk until smooth.",
-        "Toss cooked pasta in the sauce and serve hot."
-      ]
-    },
-    {
-      "title": "Paneer Butter Masala",
-      "category": "Indian",
-      "time": "40 mins",
-      "ingredients": [
-        "250g Paneer (cubed)",
-        "3 Tomatoes (pureed)",
-        "1 Onion (finely chopped)",
-        "2 tbsp Butter",
-        "1/4 cup Cashew paste",
-        "Garam Masala",
-        "Fresh Cream"
-      ],
-      "steps": [
-        "Heat butter in a pan and sauté onions until golden.",
-        "Add tomato puree and cook until oil separates.",
-        "Add cashew paste, garam masala, and salt.",
-        "Simmer for 5 minutes, then add a splash of water.",
-        "Add paneer cubes and cook for 3-4 minutes.",
-        "Garnish with fresh cream and serve."
-      ]
-    },
-    {
-      "title": "Veg Noodles",
-      "category": "Chinese",
-      "time": "25 mins",
-      "ingredients": [
-        "1 packet Hakka Noodles",
-        "1 cup Mixed Veggies (Cabbage, Carrot, Bell Peppers)",
-        "2 tbsp Soy Sauce",
-        "1 tbsp Vinegar",
-        "1 tbsp Chili Sauce",
-        "2 tbsp Oil",
-        "Salt to taste"
-      ],
-      "steps": [
-        "Boil noodles al dente and toss with a few drops of oil.",
-        "Heat oil in a wok on high heat.",
-        "Stir fry all the vegetables for 2-3 minutes.",
-        "Add soy sauce, vinegar, chili sauce, and salt.",
-        "Add boiled noodles and toss well to coat.",
-        "Serve hot."
-      ]
-    },
-    {
-      "title": "Chocolate Cake",
-      "category": "Dessert",
-      "time": "60 mins",
-      "ingredients": [
-        "1.5 cups All-purpose Flour",
-        "1 cup Sugar",
-        "1/3 cup Cocoa Powder",
-        "1 tsp Baking Soda",
-        "1/2 cup Oil",
-        "1 cup Water or Milk",
-        "1 tsp Vanilla Extract"
-      ],
-      "steps": [
-        "Preheat oven to 180°C (350°F).",
-        "Mix dry ingredients (flour, sugar, cocoa, baking soda) in a bowl.",
-        "Add oil, water/milk, and vanilla extract.",
-        "Whisk until the batter is smooth and lump-free.",
-        "Pour into a greased baking pan.",
-        "Bake for 30-35 minutes. Let cool before slicing."
-      ]
-    },
+class AllRecipeScreen extends StatefulWidget {
+  const AllRecipeScreen({super.key});
+
+  @override
+  State<AllRecipeScreen> createState() => _AllRecipeScreenState();
+}
+
+class _AllRecipeScreenState extends State<AllRecipeScreen> {
+  // Updated list: Now using Recipe objects instead of Maps
+  final List<Recipe> recipes = [
+    Recipe(
+      name: "Veg Biryani",
+      category: "Indian",
+      time: "45 mins",
+      isFavorite: 0, // 0 = false, 1 = true
+      ingredients: "2 cups Basmati Rice\n1 cup Mixed Vegetables\n2 Onions\n2 Tomatoes\nBiryani Masala\nSalt\nOil",
+      steps: "Wash and soak the rice for 20 minutes.\nHeat oil in a pan and fry sliced onions.\nAdd tomatoes and cook until soft.\nAdd vegetables and spices.\nAdd soaked rice and water.\nCook for 20 minutes until rice is done.",
+    ),
+    Recipe(
+      name: "Pasta Alfredo",
+      category: "Italian",
+      time: "30 mins",
+      isFavorite: 0,
+      ingredients: "250g Fettuccine Pasta\n1/2 cup Heavy Cream\n1/4 cup Parmesan Cheese\n2 cloves Garlic, minced\n2 tbsp Butter\nSalt and Black Pepper",
+      steps: "Boil pasta according to package instructions.\nMelt butter in a pan over medium heat.\nSauté garlic for 1 minute until fragrant.\nStir in heavy cream and simmer for 2 minutes.\nAdd parmesan cheese and whisk until smooth.\nToss cooked pasta in the sauce and serve hot.",
+    ),
+    Recipe(
+      name: "Paneer Butter Masala",
+      category: "Indian",
+      time: "40 mins",
+      isFavorite: 0,
+      ingredients: "250g Paneer (cubed)\n3 Tomatoes (pureed)\n1 Onion (finely chopped)\n2 tbsp Butter\n1/4 cup Cashew paste\nGaram Masala\nFresh Cream",
+      steps: "Heat butter in a pan and sauté onions until golden.\nAdd tomato puree and cook until oil separates.\nAdd cashew paste, garam masala, and salt.\nSimmer for 5 minutes, then add a splash of water.\nAdd paneer cubes and cook for 3-4 minutes.\nGarnish with fresh cream and serve.",
+    ),
+    Recipe(
+      name: "Veg Noodles",
+      category: "Chinese",
+      time: "25 mins",
+      isFavorite: 0,
+      ingredients: "1 packet Hakka Noodles\n1 cup Mixed Veggies (Cabbage, Carrot, Bell Peppers)\n2 tbsp Soy Sauce\n1 tbsp Vinegar\n1 tbsp Chili Sauce\n2 tbsp Oil\nSalt to taste",
+      steps: "Boil noodles al dente and toss with a few drops of oil.\nHeat oil in a wok on high heat.\nStir fry all the vegetables for 2-3 minutes.\nAdd soy sauce, vinegar, chili sauce, and salt.\nAdd boiled noodles and toss well to coat.\nServe hot.",
+    ),
+    Recipe(
+      name: "Chocolate Cake",
+      category: "Dessert",
+      time: "60 mins",
+      isFavorite: 0,
+      ingredients: "1.5 cups All-purpose Flour\n1 cup Sugar\n1/3 cup Cocoa Powder\n1 tsp Baking Soda\n1/2 cup Oil\n1 cup Water or Milk\n1 tsp Vanilla Extract",
+      steps: "Preheat oven to 180°C (350°F).\nMix dry ingredients (flour, sugar, cocoa, baking soda) in a bowl.\nAdd oil, water/milk, and vanilla extract.\nWhisk until the batter is smooth and lump-free.\nPour into a greased baking pan.\nBake for 30-35 minutes. Let cool before slicing.",
+    ),
   ];
 
   @override
@@ -626,28 +625,56 @@ class AllRecipeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Recipe List", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite, color: Colors.redAccent),
+            onPressed: () {
+              // Filters the list to only grab items where isFavorite equals 1
+              final favs = recipes.where((r) => r.isFavorite == 1).toList();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritesPage(favoriteRecipes: favs),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: ListView.builder(
         itemCount: recipes.length,
         itemBuilder: (context, index) {
-          final recipe = recipes[index]; // Grab the current recipe
+          final recipe = recipes[index];
 
           return Card(
             margin: const EdgeInsets.all(10),
             child: ListTile(
               leading: const Icon(Icons.restaurant_menu, color: Colors.blue),
-              title: Text(recipe["title"] as String),
-              subtitle: Text(
-                  "Category: ${recipe["category"]}\nCooking Time: ${recipe["time"]}"),
+              title: Text(recipe.name), // Replaced ["title"] with .name
+              subtitle: Text("Category: ${recipe.category}\nCooking Time: ${recipe.time}"),
+
+              trailing: IconButton(
+                icon: Icon(
+                  recipe.isFavorite == 1 ? Icons.favorite : Icons.favorite_border,
+                  color: recipe.isFavorite == 1 ? Colors.red : Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    // Toggles between 0 and 1
+                    recipe.isFavorite = recipe.isFavorite == 1 ? 0 : 1;
+                  });
+                },
+              ),
               onTap: () {
-                // Pass the specific data to the detail page
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => RecipeDetailPage(
-                      title: recipe["title"] as String,
-                      ingredients: List<String>.from(recipe["ingredients"]),
-                      steps: List<String>.from(recipe["steps"]),
+                      title: recipe.name,
+                      // Splits the formatted strings back into Lists for the Detail Page
+                      ingredients: recipe.ingredients.split('\n'),
+                      steps: recipe.steps.split('\n'),
                     ),
                   ),
                 );
@@ -659,7 +686,6 @@ class AllRecipeScreen extends StatelessWidget {
     );
   }
 }
-
 // --- UPDATED RECIPE DETAIL PAGE ---
 class RecipeDetailPage extends StatelessWidget {
   // Define variables that will receive data from the constructor
